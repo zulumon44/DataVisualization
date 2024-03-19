@@ -10,11 +10,14 @@ https://www.kaggle.com/datasets/agungpambudi/network-malware-detection-connectio
 1. Ensure python3 is properly installed and added to PATH
 
 2. Install Dependencies
- - `pip install pandas`
+    `pip install pandas`
 
 3. Clone the repo to a folder on your machine
 
 4. Download a [Compatible Dataset](https://www.kaggle.com/datasets/agungpambudi/network-malware-detection-connection-analysis?resource=download) to the repo folder
 
-5. Run `python3 main.py`
+5. Run the script (depends on how python3 is installed)
+    `python3 main.py`
+    **OR**
+    `py main.py`
 
