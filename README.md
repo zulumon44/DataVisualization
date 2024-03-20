@@ -10,7 +10,7 @@ https://www.kaggle.com/datasets/agungpambudi/network-malware-detection-connectio
 1. Ensure python3 is properly installed and added to PATH
 
 2. Update & Install Dependencies  
-    - `pip install --upgrade pip`
+    - `python.exe -m pip install --upgrade pip`
     - `pip install -r requirements.txt`
 
 3. Clone the repo to a folder on your machine
