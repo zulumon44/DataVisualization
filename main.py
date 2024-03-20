@@ -2,28 +2,33 @@
 import pandas as pd
 
 
-# csvFile = pd.read_csv('CTU-IoT-Malware-Capture-1-1conn.log.labeled.csv')
-# print(csvFile.head())
 import sys
 import os
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 
-#(QApplication, QWidget, QPushButton, QTextEdit, QComboBox, QFileDialog,QHBoxLayout, QVBoxLayout)
-    
+global data
+
+
 class MainMenu(QWidget):
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Data Visualizer 1.0")
         self.setMinimumSize(QSize(300,125))
+
         # Layout of Tabs
         main_layout = QGridLayout(self)
         self.setLayout(main_layout)
 
         tab = QTabWidget(self)
 
+        # Data Import Tab
+        
         tab1 = QWidget(self)
+        tab1.setStyleSheet("*{font-size: 12pt;}")
         layout = QGridLayout()
+
         # File Selector Button
         btn = QPushButton('Select File')
         btn.clicked.connect(self.getFileName)
@@ -31,9 +36,9 @@ class MainMenu(QWidget):
         layout.addWidget(btn,0,1)
 
         # Review File Selector 
-        self.textbox = QLineEdit()
+        self.label = QLabel("No File Selected")
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.textbox,1,0,1,3)
+        layout.addWidget(self.label,1,0,1,3)
 
         # Analyze Button
         go = QPushButton('Import')
@@ -47,19 +52,37 @@ class MainMenu(QWidget):
 
         tab1.setLayout(layout)
 
+        # Data View Tab
 
-        
+        tab2 = QWidget(self)
+        layout = QGridLayout()
+
+
         tab.addTab(tab1,"Import Dataset")
+        tab.addTab(tab2,"View Dataset")
         
         main_layout.addWidget(tab, 0, 0, 2, 1)
-        # main_layout.addWidget(QPushButton('Save'), 2, 0,
-        #                       alignment=Qt.AlignmentFlag.AlignLeft)
-        # main_layout.addWidget(QPushButton('Cancel'), 2, 0,
-        #                       alignment=Qt.AlignmentFlag.AlignRight)
+
         
         self.show()
 
+    
     def ImportData(self):
+        if self.label.text() != "No File Selected":
+            try:
+                data = pd.read_csv(self.path)
+                print(data.head())
+                dlg = QMessageBox(self)
+                dlg.setWindowTitle("Success!")
+                dlg.setText("File Successfully Imported.")
+                dlg.exec()
+            except Exception as e:
+                print(e)
+        else:
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("ERROR!")
+            dlg.setText("You Must Select a File")
+            dlg.exec()
         print("Done")
 
     def Close(self):
@@ -74,8 +97,8 @@ class MainMenu(QWidget):
             filter=file_filter,
             initialFilter='Data File (*.xlsx *.csv *.dat)'
         )
-        self.textbox.setText(str(response[0]))
-
+        self.label.setText(str(response[0]).rsplit('/', 1)[-1])
+        self.path = str(response[0])
 
 
 
