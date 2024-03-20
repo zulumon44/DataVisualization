@@ -1,13 +1,32 @@
-#import os
 import pandas as pd
-
+import pyqtgraph as pg
 
 import sys
 import os
+
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 
+
 global data
+data = pd.DataFrame()
+
+
+class TableModel(QAbstractTableModel):
+    def __init__(self, data):
+        super(TableModel, self).__init__()
+        self._data = data
+    
+    def data(self, index, role):
+        if role == Qt.ItemDataRole.DisplayRole:
+            value = self._data[index.row(), index.column()]
+            return str(value)
+
+    def rowCount(self, index):
+        return self._data.shape[0]
+
+    def columnCount(self, index):
+        return self._data.shape[1]
 
 
 class MainMenu(QWidget):
@@ -15,7 +34,7 @@ class MainMenu(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Data Visualizer 1.0")
-        self.setMinimumSize(QSize(300,125))
+        self.setMinimumSize(QSize(300,200))
 
         # Layout of Tabs
         main_layout = QGridLayout(self)
@@ -23,6 +42,8 @@ class MainMenu(QWidget):
 
         tab = QTabWidget(self)
 
+
+        # ---------------------------------------
         # Data Import Tab
         
         tab1 = QWidget(self)
@@ -52,14 +73,30 @@ class MainMenu(QWidget):
 
         tab1.setLayout(layout)
 
+
+        # ---------------------------------------
         # Data View Tab
 
         tab2 = QWidget(self)
         layout = QGridLayout()
 
+        btn = QPushButton('Refresh File')
+        btn.clicked.connect(self.getFileName)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(btn,0,0)
 
+        self.table = QTableView()
+        self.model = TableModel(data)
+        self.table.setModel(self.model)
+
+        layout.addWidget(self.table)
+        tab2.setLayout(layout)
+
+        # TAB LIST
         tab.addTab(tab1,"Import Dataset")
-        tab.addTab(tab2,"View Dataset")
+        tab.addTab(tab2,"View Raw Dataset")
+        # Graphs? https://www.pythonguis.com/tutorials/pyqt6-plotting-pyqtgraph/
+        # Top IP?
         
         main_layout.addWidget(tab, 0, 0, 2, 1)
 
@@ -99,7 +136,6 @@ class MainMenu(QWidget):
         )
         self.label.setText(str(response[0]).rsplit('/', 1)[-1])
         self.path = str(response[0])
-
 
 
 
