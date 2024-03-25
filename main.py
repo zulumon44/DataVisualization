@@ -11,7 +11,7 @@ from PyQt6.QtCore import *
 global data
 data = pd.DataFrame()
 
-
+    # idk how tables work
 class TableModel(QAbstractTableModel):
     def __init__(self, data):
         super(TableModel, self).__init__()
@@ -81,9 +81,10 @@ class MainMenu(QWidget):
         layout = QGridLayout()
 
         btn = QPushButton('Refresh File')
-        btn.clicked.connect(self.getFileName)
+        btn.clicked.connect(self.ImportData)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(btn,0,0)
+        # layout.addWidget(btn,0,0)
+        # Idk if refresh button is necessary
 
         self.table = QTableView()
         self.model = TableModel(data)
@@ -92,11 +93,20 @@ class MainMenu(QWidget):
         layout.addWidget(self.table)
         tab2.setLayout(layout)
 
+        # ---------------------------------------
+        # Top IPs Tab
+
+        tab3 = QWidget(self)
+        layout = QGridLayout()
+
+
+        tab3.setLayout(layout)
+
         # TAB LIST
         tab.addTab(tab1,"Import Dataset")
-        tab.addTab(tab2,"View Raw Dataset")
+        tab.addTab(tab2,"View Raw Table")
+        tab.addTab(tab3,"Top IP\'s")
         # Graphs? https://www.pythonguis.com/tutorials/pyqt6-plotting-pyqtgraph/
-        # Top IP?
         
         main_layout.addWidget(tab, 0, 0, 2, 1)
 
