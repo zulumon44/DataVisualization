@@ -168,9 +168,9 @@ class MainMenu(QWidget):
     def buildTabContents(self):
         self.createTable(self.tab2, self.data)
         print("Finding Top IPS")
-        topIPs = self.getTrafficFreq()
+        srcIPCounts, srcPortCounts, destIPCounts, destPortCounts = self.getTrafficFreq()
         print("Creating Tab3")
-        self.createTable(self.tab3, topIPs)
+        self.createTable(self.tab3, srcIPCounts)
 
     def getTrafficFreq(self):
         
