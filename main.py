@@ -34,7 +34,7 @@ class MainMenu(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Data Visualizer 1.0")
-        self.setMinimumSize(QSize(300,200))
+        self.setMinimumSize(QSize(700,500))
 
         # Layout of Tabs
         main_layout = QGridLayout(self)
@@ -86,11 +86,11 @@ class MainMenu(QWidget):
         # layout.addWidget(btn,0,0)
         # Idk if refresh button is necessary
 
-        self.table = QTableView()
-        self.model = TableModel(data)
-        self.table.setModel(self.model)
+        tab2.table = QTableView()
+        tab2.model = TableModel(data)
+        tab2.table.setModel(tab2.model)
 
-        layout.addWidget(self.table)
+        layout.addWidget(tab2.table)
         tab2.setLayout(layout)
 
         # ---------------------------------------
@@ -102,14 +102,33 @@ class MainMenu(QWidget):
 
         tab3.setLayout(layout)
 
+        # ---------------------------------------
+        # Top Correlations Tab
+
+        tab4 = QWidget(self)
+        layout = QGridLayout()
+
+
+        tab4.setLayout(layout)
+
+        # ---------------------------------------
+        # Box and Whisker Tab
+
+        tab5 = QWidget(self)
+        layout = QGridLayout()
+
+
+        tab5.setLayout(layout)
+
         # TAB LIST
         tab.addTab(tab1,"Import Dataset")
         tab.addTab(tab2,"View Raw Table")
-        tab.addTab(tab3,"Top IP\'s")
+        tab.addTab(tab3,"Top IPs")
+        tab.addTab(tab4,"Top Correlations")
+        tab.addTab(tab5,"Box and Whiskers")
         # Graphs? https://www.pythonguis.com/tutorials/pyqt6-plotting-pyqtgraph/
         
         main_layout.addWidget(tab, 0, 0, 2, 1)
-
         
         self.show()
 
