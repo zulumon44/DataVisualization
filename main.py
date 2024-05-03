@@ -171,6 +171,10 @@ class MainMenu(QWidget):
         srcIPCounts, srcPortCounts, destIPCounts, destPortCounts = self.getTrafficFreq()
         print("Creating Tab3")
         self.createTable(self.tab3, srcIPCounts)
+        print("Generating Correlations")
+        corrTable = self.genCorr()
+        print("Creating Tab4")
+        self.createTable(self.tab4, corrTable)
 
     def getTrafficFreq(self):
         
@@ -193,6 +197,10 @@ class MainMenu(QWidget):
         layout.addWidget(table)
         tab.setLayout(layout)
 
+    def genCorr(self):
+        corrTable = self.data.corr(numeric_only=True)
+        print(corrTable)
+        return corrTable
 
 app = QApplication(sys.argv)
 MainMenu = MainMenu()
