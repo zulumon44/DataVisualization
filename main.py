@@ -85,45 +85,27 @@ class MainMenu(QWidget):
 
         self.tab2 = QWidget(self)
 
-        btn = QPushButton('Refresh File')
-        btn.clicked.connect(self.ImportData)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # layout.addWidget(btn,0,0)
-        # Idk if refresh button is necessary
-
         # ---------------------------------------
         # Top IPs Tab
 
-        tab3 = QWidget(self)
-        layout = QGridLayout()
-
-
-        tab3.setLayout(layout)
+        self.tab3 = QWidget(self)
 
         # ---------------------------------------
         # Top Correlations Tab
 
-        tab4 = QWidget(self)
-        layout = QGridLayout()
-
-
-        tab4.setLayout(layout)
+        self.tab4 = QWidget(self)
 
         # ---------------------------------------
         # Box and Whisker Tab
 
-        tab5 = QWidget(self)
-        layout = QGridLayout()
-
-
-        tab5.setLayout(layout)
+        self.tab5 = QWidget(self)
 
         # TAB LIST
         tab.addTab(tab1,"Import Dataset")
         tab.addTab(self.tab2,"View Raw Table")
-        tab.addTab(tab3,"Top IPs")
-        tab.addTab(tab4,"Top Correlations")
-        tab.addTab(tab5,"Box and Whiskers")
+        tab.addTab(self.tab3,"Top IPs")
+        tab.addTab(self.tab4,"Top Correlations")
+        tab.addTab(self.tab5,"Box and Whiskers")
         # Graphs? https://www.pythonguis.com/tutorials/pyqt6-plotting-pyqtgraph/
         
         main_layout.addWidget(tab, 0, 0, 2, 1)
@@ -140,7 +122,7 @@ class MainMenu(QWidget):
                 dlg.setWindowTitle("Success!")
                 dlg.setText("File Successfully Imported.")
                 dlg.exec()
-                self.createTable(self.tab2)
+                self.buildTabContents()
             except Exception as e:
                 print(e)
         else:
@@ -165,10 +147,25 @@ class MainMenu(QWidget):
         self.label.setText(str(response[0]).rsplit('/', 1)[-1])
         self.path = str(response[0])
 
-    def createTable(self, tab):
+    def buildTabContents(self):
+        print("Creating Tab2")
+        self.createTable(self.tab2, self.data)
+        print("Finding Top IPS")
+        topIPs = self.getTopIPs()
+        print("Creating Tab3")
+        self.createTable(self.tab3, topIPs)
+
+    def getTopIPs(self):
+        
+        IPCounts = self.data.value_counts(sort=True, dropna=True)
+        print(f"{IPCounts}")
+
+        return IPCounts
+
+    def createTable(self, tab, data):
         layout = QVBoxLayout()
         table = QTableView()
-        model = TableModel(self.data)
+        model = TableModel(data)
         table.setModel(model)
 
         layout.addWidget(table)
