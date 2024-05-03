@@ -88,7 +88,25 @@ class MainMenu(QWidget):
         # ---------------------------------------
         # Top IPs Tab
 
-        self.tab3 = QWidget(self)
+        tab3 = QWidget(self)
+        layout = QGridLayout()
+
+        # Drop Down Menu
+        dropdown = QComboBox()
+        dropdown.addItem("Top Source IPs")
+        dropdown.addItem("Top Destination IPs")
+        dropdown.addItem("Top Source Ports")
+        dropdown.addItem("Top Destination Ports")
+        layout.addWidget(dropdown)
+
+        label = QLabel("Top 10:")
+        datalabel = QLabel("Data")
+
+        layout.addWidget(label, 1, 0)
+        layout.addWidget(datalabel, 1, 1)
+
+
+        tab3.setLayout(layout)
 
         # ---------------------------------------
         # Top Correlations Tab
@@ -103,7 +121,7 @@ class MainMenu(QWidget):
         # TAB LIST
         tab.addTab(tab1,"Import Dataset")
         tab.addTab(self.tab2,"View Raw Table")
-        tab.addTab(self.tab3,"Top IPs")
+        tab.addTab(self.tab3,"Top Traffic")
         tab.addTab(self.tab4,"Top Correlations")
         tab.addTab(self.tab5,"Box and Whiskers")
         # Graphs? https://www.pythonguis.com/tutorials/pyqt6-plotting-pyqtgraph/
