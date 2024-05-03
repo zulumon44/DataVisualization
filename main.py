@@ -99,6 +99,13 @@ class MainMenu(QWidget):
         tab3 = QWidget(self)
         layout = QGridLayout()
 
+        # Drop Down Menu
+        dropdown = QComboBox()
+        dropdown.addItem("Top Source IPs")
+        dropdown.addItem("Top Destination IPs")
+        dropdown.addItem("Top Source Ports")
+        dropdown.addItem("Top Destination Ports")
+        layout.addWidget(dropdown)
 
         tab3.setLayout(layout)
 
