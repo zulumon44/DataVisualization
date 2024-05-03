@@ -88,7 +88,7 @@ class MainMenu(QWidget):
         # ---------------------------------------
         # Top IPs Tab
 
-        tab3 = QWidget(self)
+        self.tab3 = QWidget(self)
         layout = QGridLayout()
 
         # Drop Down Menu
@@ -106,7 +106,7 @@ class MainMenu(QWidget):
         layout.addWidget(datalabel, 1, 1)
 
 
-        tab3.setLayout(layout)
+        self.tab3.setLayout(layout)
 
         # ---------------------------------------
         # Top Correlations Tab
@@ -166,19 +166,23 @@ class MainMenu(QWidget):
         self.path = str(response[0])
 
     def buildTabContents(self):
-        print("Creating Tab2")
         self.createTable(self.tab2, self.data)
         print("Finding Top IPS")
-        topIPs = self.getTopIPs()
+        topIPs = self.getTrafficFreq()
         print("Creating Tab3")
         self.createTable(self.tab3, topIPs)
 
-    def getTopIPs(self):
+    def getTrafficFreq(self):
         
-        IPCounts = self.data.value_counts(sort=True, dropna=True)
-        print(f"{IPCounts}")
+        srcIPCounts = self.data["id.orig_h"].value_counts().to_frame()
 
-        return IPCounts
+        srcPortCounts = self.data["id.orig_p"].value_counts().to_frame()
+
+        destIPCounts = self.data["id.resp_h"].value_counts().to_frame()
+
+        destPortCounts = self.data["id.resp_p"].value_counts().to_frame()
+
+        return srcIPCounts, srcPortCounts, destIPCounts, destPortCounts
 
     def createTable(self, tab, data):
         layout = QVBoxLayout()
