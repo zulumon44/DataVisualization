@@ -19,13 +19,19 @@ class TableModel(QAbstractTableModel):
     
     def data(self, index, role):
         if role == Qt.ItemDataRole.DisplayRole:
-            value = self._data[index.row(), index.column()]
+            value = self._data.iloc[index.row(),index.column()]
+
             return str(value)
+    #def headerData(self, section, orientation, role):
+    #    if orientation == Qt.Horizontal:
+    #        return 'Column {}'.format(section + 1)
+    #    return super().headerData(section, orientation, role)
 
     def rowCount(self, index):
         return self._data.shape[0]
 
     def columnCount(self, index):
+        
         return self._data.shape[1]
 
 
@@ -77,21 +83,13 @@ class MainMenu(QWidget):
         # ---------------------------------------
         # Data View Tab
 
-        tab2 = QWidget(self)
-        layout = QGridLayout()
+        self.tab2 = QWidget(self)
 
         btn = QPushButton('Refresh File')
         btn.clicked.connect(self.ImportData)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         # layout.addWidget(btn,0,0)
         # Idk if refresh button is necessary
-
-        tab2.table = QTableView()
-        tab2.model = TableModel(data)
-        tab2.table.setModel(tab2.model)
-
-        layout.addWidget(tab2.table)
-        tab2.setLayout(layout)
 
         # ---------------------------------------
         # Top IPs Tab
@@ -122,7 +120,7 @@ class MainMenu(QWidget):
 
         # TAB LIST
         tab.addTab(tab1,"Import Dataset")
-        tab.addTab(tab2,"View Raw Table")
+        tab.addTab(self.tab2,"View Raw Table")
         tab.addTab(tab3,"Top IPs")
         tab.addTab(tab4,"Top Correlations")
         tab.addTab(tab5,"Box and Whiskers")
@@ -136,12 +134,13 @@ class MainMenu(QWidget):
     def ImportData(self):
         if self.label.text() != "No File Selected":
             try:
-                data = pd.read_csv(self.path)
-                print(data.head())
+                self.data = pd.read_csv(self.path, sep='|')
+                print(self.data.head())
                 dlg = QMessageBox(self)
                 dlg.setWindowTitle("Success!")
                 dlg.setText("File Successfully Imported.")
                 dlg.exec()
+                self.createTable(self.tab2)
             except Exception as e:
                 print(e)
         else:
@@ -166,6 +165,14 @@ class MainMenu(QWidget):
         self.label.setText(str(response[0]).rsplit('/', 1)[-1])
         self.path = str(response[0])
 
+    def createTable(self, tab):
+        layout = QVBoxLayout()
+        table = QTableView()
+        model = TableModel(self.data)
+        table.setModel(model)
+
+        layout.addWidget(table)
+        tab.setLayout(layout)
 
 
 app = QApplication(sys.argv)
