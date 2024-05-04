@@ -1,15 +1,9 @@
-import typing
 from PyQt6.QtCore import Qt
 import pandas as pd
 import pyqtgraph as pg
 
-
 import sys
-import os
 import numpy as np
-
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
