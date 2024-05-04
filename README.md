@@ -51,9 +51,14 @@ This tab allows you to quickyly view stats about the most frequently occurring S
 
 Select an option from the dropdown menu and click **Update Selection** to populate the field.
 
-### Top Correlations
+### Correlation Matrix
 
+This tab displays a table of the correlations between all numeric features in the dataset. Scroll bars are available to navigate up/down and left/right with columns and rows being labeled with their respective feature.
 
+### Correlation Heat Map
+
+This tab shows a heat map of the correlations, allowing for easier understanding and visualization of these correlations.
 
 ### Missing Data
 
+This tab displays a table with the top 20 features with the most missing or "N/A" values. This makes it easier to determine which features may need some preprocessing to account for the missing values.
