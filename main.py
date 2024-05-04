@@ -6,6 +6,7 @@ import pyqtgraph as pg
 
 import sys
 import os
+import numpy as np
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -132,16 +133,22 @@ class MainMenu(QWidget):
         self.tab4 = QWidget(self)
 
         # ---------------------------------------
-        # Missing Data Tab
+        # Top Correlations Tab
 
         self.tab5 = QWidget(self)
+
+        # ---------------------------------------
+        # Missing Data Tab
+
+        self.tab6 = QWidget(self)
 
         # TAB LIST
         tab.addTab(tab1,"Import Dataset")
         tab.addTab(self.tab2,"View Raw Table")
         tab.addTab(self.tab3,"Top Traffic")
-        tab.addTab(self.tab4,"Top Correlations")
-        tab.addTab(self.tab5,"Missing Data")
+        tab.addTab(self.tab4,"Correlation Matrix")
+        tab.addTab(self.tab5,"Correlation Heat Map")
+        tab.addTab(self.tab6,"Missing Data")
         # Graphs? https://www.pythonguis.com/tutorials/pyqt6-plotting-pyqtgraph/
         
         main_layout.addWidget(tab, 0, 0, 2, 1)
@@ -168,7 +175,6 @@ class MainMenu(QWidget):
         if self.label.text() != "No File Selected":
             try:
                 self.data = pd.read_csv(self.path, sep='|')
-                print(self.data.head())
                 dlg = QMessageBox(self)
                 dlg.setWindowTitle("Success!")
                 dlg.setText("File Successfully Imported.")
@@ -199,21 +205,18 @@ class MainMenu(QWidget):
         self.path = str(response[0])
 
     def buildTabContents(self):
-        print("Creating Tab2")
         self.createTable(self.tab2, self.data)
-        print("Generate Correlations")
         corrTable = self.genCorr()
-        print("Creating Tab4")
-        self.createTable(self.tab4, corrTable)
-        print("Identifying Missing Data")
+        labeledCorrTable = corrTable.copy()
+        labeledCorrTable.insert(loc=0, column="", value=labeledCorrTable.columns)
+        self.createTable(self.tab4, labeledCorrTable)
+        self.createTab5(corrTable)
         missData = self.missingData()
-        print("Creating Tab5")
-        self.createTable(self.tab5, missData)
+        self.createTable(self.tab6, missData)
 
     def getTopIPs(self):
         
         IPCounts = self.data.value_counts(sort=True, dropna=True)
-        print(f"{IPCounts}")
 
         return IPCounts
 
@@ -228,7 +231,6 @@ class MainMenu(QWidget):
 
     def genCorr(self):
         corrTable = self.data.corr(numeric_only=True)
-        corrTable.insert(loc=0, column="", value=corrTable.columns)
         return corrTable
     
     def missingData(self):
@@ -237,6 +239,19 @@ class MainMenu(QWidget):
         missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
         missing_data.insert(loc=0, column="featureName", value=self.data.columns)
         return missing_data.head(20)
+
+    def createTab5(self, corrMap):
+        layout = QVBoxLayout()
+        graphWidget = pg.ImageView()
+
+        graphWidget.setImage(corrMap.to_numpy())
+        colors = [(0,0,0),(29, 14, 54),(65, 31, 120),(247, 79, 79),(252, 134, 134),(255, 186, 158),(255, 
+        255, 255)]
+        cmap = pg.ColorMap(pos=np.linspace(0.0, 1.0, 7), color=colors)
+        graphWidget.setColorMap(cmap)
+
+        layout.addWidget(graphWidget)
+        self.tab5.setLayout(layout)
 
 app = QApplication(sys.argv)
 MainMenu = MainMenu()
