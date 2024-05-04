@@ -1,3 +1,5 @@
+import typing
+from PyQt6.QtCore import Qt
 import pandas as pd
 import pyqtgraph as pg
 
@@ -20,17 +22,26 @@ class TableModel(QAbstractTableModel):
     def __init__(self, data):
         super(TableModel, self).__init__()
         self._data = data
-        self.hheaders = [x for x in data.columns]
+        self.header_labels = [x for x in data.columns]
 
     def data(self, index, role):
         if role == Qt.ItemDataRole.DisplayRole:
             value = self._data.iloc[index.row(),index.column()]
 
             return str(value)
-    #def headerData(self, section, orientation, role):
-    #    if orientation == Qt.Orientation.Horizontal:
-    #        return self.header_labels[section]
-    #    return QAbstractTableModel.headerData(self, section, orientation, role)
+    def headerData(self, section, orientation, role):
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
+            return self.header_labels[section]
+        return QAbstractTableModel.headerData(self, section, orientation, role)
+    
+    def setHeaderData(self, section, orientation, data, role) :
+        if orientation == Qt.Orientation.Horizontal and role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole):
+            try:
+                self.header_labels[section] = data
+                return True
+            except:
+                return False
+        return super().setHeaderData(section, orientation, data, role)
 
     def rowCount(self, index):
         return self._data.shape[0]
@@ -190,10 +201,10 @@ class MainMenu(QWidget):
     def buildTabContents(self):
         print("Creating Tab2")
         self.createTable(self.tab2, self.data)
-        print("Finding Top IPS")
-        topIPs = self.getTopIPs()
-        print("Creating Tab3")
-        self.createTable(self.tab3, topIPs)
+        print("Generate Correlations")
+        corrTable = self.genCorr()
+        print("Creating Tab4")
+        self.createTable(self.tab4, corrTable)
         print("Identifying Missing Data")
         missData = self.missingData()
         print("Creating Tab5")
@@ -217,7 +228,7 @@ class MainMenu(QWidget):
 
     def genCorr(self):
         corrTable = self.data.corr(numeric_only=True)
-        print(corrTable)
+        corrTable.insert(loc=0, column="", value=corrTable.columns)
         return corrTable
     
     def missingData(self):
