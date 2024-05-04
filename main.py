@@ -1,6 +1,7 @@
 import pandas as pd
 import pyqtgraph as pg
 
+
 import sys
 import os
 
@@ -96,18 +97,20 @@ class MainMenu(QWidget):
         layout = QGridLayout()
 
         # Drop Down Menu
-        dropdown = QComboBox()
-        dropdown.addItem("Top Source IPs")
-        dropdown.addItem("Top Destination IPs")
-        dropdown.addItem("Top Source Ports")
-        dropdown.addItem("Top Destination Ports")
-        layout.addWidget(dropdown)
+        self.dropdown = QComboBox()
+        self.dropdown.addItem("Top Source IPs")
+        self.dropdown.addItem("Top Destination IPs")
+        self.dropdown.addItem("Top Source Ports")
+        self.dropdown.addItem("Top Destination Ports")
+        layout.addWidget(self.dropdown)
 
-        label = QLabel("Top 10:")
-        datalabel = QLabel("Data")
+        self.result = QLabel("Results")
+        layout.addWidget(self.result, 1, 0)
 
-        layout.addWidget(label, 1, 0)
-        layout.addWidget(datalabel, 1, 1)
+        btn = QPushButton('Update Selection')
+        btn.clicked.connect(self.updateSelection)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(btn,0,1)
 
 
         self.tab3.setLayout(layout)
@@ -134,7 +137,22 @@ class MainMenu(QWidget):
         
         self.show()
 
-    
+    def updateSelection(self):
+        selected_option = self.dropdown.currentText()
+        if selected_option == "Top Source IPs":
+
+            top_ip_counts = self.data["id.orig_h"].value_counts().head(10)
+            self.result.setText(str(top_ip_counts.to_string()))
+        elif selected_option == "Top Destination IPs":
+            top_ip_counts = self.data["id.resp_h"].value_counts().head(10)
+            self.result.setText(str(top_ip_counts.to_string()))
+        elif selected_option == "Top Source Ports":
+            top_ip_counts = self.data["id.orig_p"].value_counts().head(10)
+            self.result.setText(str(top_ip_counts.to_string()))
+        elif selected_option == "Top Destination Ports":
+            top_ip_counts = self.data["id.resp_p"].value_counts().head(10)
+            self.result.setText(str(top_ip_counts.to_string()))
+
     def ImportData(self):
         if self.label.text() != "No File Selected":
             try:
@@ -170,31 +188,23 @@ class MainMenu(QWidget):
         self.path = str(response[0])
 
     def buildTabContents(self):
+        print("Creating Tab2")
         self.createTable(self.tab2, self.data)
         print("Finding Top IPS")
-        srcIPCounts, srcPortCounts, destIPCounts, destPortCounts = self.getTrafficFreq()
+        topIPs = self.getTopIPs()
         print("Creating Tab3")
-        self.createTable(self.tab3, srcIPCounts)
-        print("Generating Correlations")
-        corrTable = self.genCorr()
-        print("Creating Tab4")
-        self.createTable(self.tab4, corrTable)
+        self.createTable(self.tab3, topIPs)
         print("Identifying Missing Data")
         missData = self.missingData()
         print("Creating Tab5")
         self.createTable(self.tab5, missData)
 
-    def getTrafficFreq(self):
+    def getTopIPs(self):
         
-        srcIPCounts = self.data["id.orig_h"].value_counts().to_frame()
+        IPCounts = self.data.value_counts(sort=True, dropna=True)
+        print(f"{IPCounts}")
 
-        srcPortCounts = self.data["id.orig_p"].value_counts().to_frame()
-
-        destIPCounts = self.data["id.resp_h"].value_counts().to_frame()
-
-        destPortCounts = self.data["id.resp_p"].value_counts().to_frame()
-
-        return srcIPCounts, srcPortCounts, destIPCounts, destPortCounts
+        return IPCounts
 
     def createTable(self, tab, data):
         layout = QVBoxLayout()
