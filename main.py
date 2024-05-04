@@ -4,6 +4,9 @@ import pyqtgraph as pg
 import sys
 import os
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 
@@ -16,16 +19,17 @@ class TableModel(QAbstractTableModel):
     def __init__(self, data):
         super(TableModel, self).__init__()
         self._data = data
-    
+        self.hheaders = [x for x in data.columns]
+
     def data(self, index, role):
         if role == Qt.ItemDataRole.DisplayRole:
             value = self._data.iloc[index.row(),index.column()]
 
             return str(value)
     #def headerData(self, section, orientation, role):
-    #    if orientation == Qt.Horizontal:
-    #        return 'Column {}'.format(section + 1)
-    #    return super().headerData(section, orientation, role)
+    #    if orientation == Qt.Orientation.Horizontal:
+    #        return self.header_labels[section]
+    #    return QAbstractTableModel.headerData(self, section, orientation, role)
 
     def rowCount(self, index):
         return self._data.shape[0]
@@ -114,7 +118,7 @@ class MainMenu(QWidget):
         self.tab4 = QWidget(self)
 
         # ---------------------------------------
-        # Box and Whisker Tab
+        # Missing Data Tab
 
         self.tab5 = QWidget(self)
 
@@ -123,7 +127,7 @@ class MainMenu(QWidget):
         tab.addTab(self.tab2,"View Raw Table")
         tab.addTab(self.tab3,"Top Traffic")
         tab.addTab(self.tab4,"Top Correlations")
-        tab.addTab(self.tab5,"Box and Whiskers")
+        tab.addTab(self.tab5,"Missing Data")
         # Graphs? https://www.pythonguis.com/tutorials/pyqt6-plotting-pyqtgraph/
         
         main_layout.addWidget(tab, 0, 0, 2, 1)
@@ -175,6 +179,10 @@ class MainMenu(QWidget):
         corrTable = self.genCorr()
         print("Creating Tab4")
         self.createTable(self.tab4, corrTable)
+        print("Identifying Missing Data")
+        missData = self.missingData()
+        print("Creating Tab5")
+        self.createTable(self.tab5, missData)
 
     def getTrafficFreq(self):
         
@@ -201,6 +209,13 @@ class MainMenu(QWidget):
         corrTable = self.data.corr(numeric_only=True)
         print(corrTable)
         return corrTable
+    
+    def missingData(self):
+        total = self.data.isnull().sum().sort_values(ascending=False)
+        percent = (self.data.isnull().sum()/self.data.isnull().count()).sort_values(ascending=False)
+        missing_data = pd.concat([total, percent], axis=1, keys=['Total', 'Percent'])
+        missing_data.insert(loc=0, column="featureName", value=self.data.columns)
+        return missing_data.head(20)
 
 app = QApplication(sys.argv)
 MainMenu = MainMenu()
