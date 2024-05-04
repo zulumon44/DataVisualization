@@ -214,24 +214,6 @@ class MainMenu(QWidget):
     def buildTabContents(self):
         print("Creating Tab2")
         self.createTable(self.tab2, self.data)
-<<<<<<< Updated upstream
-        print("Generate Correlations")
-        corrTable = self.genCorr()
-        print("Creating Tab4")
-        self.createTable(self.tab4, corrTable)
-        print("Identifying Missing Data")
-        missData = self.missingData()
-        print("Creating Tab5")
-        self.createTable(self.tab5, missData)
-
-    def getTopIPs(self):
-        
-        IPCounts = self.data.value_counts(sort=True, dropna=True)
-        print(f"{IPCounts}")
-
-        return IPCounts
-=======
->>>>>>> Stashed changes
 
     def createTable(self, tab, data):
         layout = QVBoxLayout()
