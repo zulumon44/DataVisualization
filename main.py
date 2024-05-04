@@ -18,7 +18,6 @@ from PyQt6.QtCore import *
 global data
 data = pd.DataFrame()
 
-    # idk how tables work
 class TableModel(QAbstractTableModel):
     def __init__(self, data):
         super(TableModel, self).__init__()
@@ -51,7 +50,7 @@ class TableModel(QAbstractTableModel):
         
         return self._data.shape[1]
 
-
+# Main Window
 class MainMenu(QWidget):
 
     def __init__(self):
@@ -116,9 +115,11 @@ class MainMenu(QWidget):
         self.dropdown.addItem("Top Destination Ports")
         layout.addWidget(self.dropdown)
 
+        # Results
         self.result = QLabel("Results")
         layout.addWidget(self.result, 1, 0)
 
+        # Update Button
         btn = QPushButton('Update Selection')
         btn.clicked.connect(self.updateSelection)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -155,22 +156,31 @@ class MainMenu(QWidget):
         
         self.show()
 
+        # Tab 3 - Top Traffic Function
     def updateSelection(self):
         selected_option = self.dropdown.currentText()
         if selected_option == "Top Source IPs":
 
             top_ip_counts = self.data["id.orig_h"].value_counts().head(10)
-            self.result.setText(str(top_ip_counts.to_string()))
+            self.result.setText("IP                         Count\n"+str(self.splitip(top_ip_counts)))
         elif selected_option == "Top Destination IPs":
             top_ip_counts = self.data["id.resp_h"].value_counts().head(10)
-            self.result.setText(str(top_ip_counts.to_string()))
+            self.result.setText("IP                         Count\n"+str(self.splitip(top_ip_counts)))
         elif selected_option == "Top Source Ports":
             top_ip_counts = self.data["id.orig_p"].value_counts().head(10)
-            self.result.setText(str(top_ip_counts.to_string()))
+            self.result.setText("Port    Count\n"+str(self.splitip(top_ip_counts)))
         elif selected_option == "Top Destination Ports":
             top_ip_counts = self.data["id.resp_p"].value_counts().head(10)
-            self.result.setText(str(top_ip_counts.to_string()))
+            self.result.setText("Port    Count\n"+str(self.splitip(top_ip_counts)))
+            
+    def splitip(self, ip):
+        list = ip.to_string().split("\n")[1:]
+        total = ""
+        for i, j in enumerate(list):
+            total += str(j) + "\n"
+        return total
 
+        # Data import function
     def ImportData(self):
         if self.label.text() != "No File Selected":
             try:
@@ -189,9 +199,11 @@ class MainMenu(QWidget):
             dlg.exec()
         print("Done")
 
+        # Close Window
     def Close(self):
         sys.exit(self)
     
+        # File Explorer
     def getFileName(self):
         file_filter = 'Data File (*.xlsx *.csv *.dat);; Excel File (*.xlsx *.xls)'
         response = QFileDialog.getOpenFileName(
@@ -204,6 +216,7 @@ class MainMenu(QWidget):
         self.label.setText(str(response[0]).rsplit('/', 1)[-1])
         self.path = str(response[0])
 
+        # Build out Tabs
     def buildTabContents(self):
         self.createTable(self.tab2, self.data)
         corrTable = self.genCorr()
