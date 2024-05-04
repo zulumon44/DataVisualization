@@ -263,7 +263,7 @@ class MainMenu(QWidget):
 
         graphWidget = pg.ImageView(view=plot)
         graphWidget.setImage(corrMap.to_numpy())
-        colors = [(0,0,0),(29, 14, 54),(65, 31, 120),(247, 79, 79),(252, 134, 134),(255, 186, 158),(255, 
+        colors = [(25, 25, 25),(29, 14, 54),(65, 31, 120),(247, 79, 79),(252, 134, 134),(255, 186, 158),(255, 
         255, 255)]
         cmap = pg.ColorMap(pos=np.linspace(0.0, 1.0, 7), color=colors)
         graphWidget.setColorMap(cmap)
