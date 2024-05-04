@@ -255,8 +255,19 @@ class MainMenu(QWidget):
 
     def createTab5(self, corrMap):
         layout = QVBoxLayout()
-        graphWidget = pg.ImageView()
 
+        x = "                                " + corrMap.columns
+        xdict = dict(enumerate(x))
+
+        xaxis = pg.AxisItem(orientation='bottom')
+        xaxis.setTicks([xdict.items()])
+
+        yaxis = pg.AxisItem(orientation='left')
+        yaxis.setTicks([xdict.items()])
+
+        plot = pg.PlotItem(axisItems={'bottom': xaxis, 'left': yaxis})
+
+        graphWidget = pg.ImageView(view=plot)
         graphWidget.setImage(corrMap.to_numpy())
         colors = [(0,0,0),(29, 14, 54),(65, 31, 120),(247, 79, 79),(252, 134, 134),(255, 186, 158),(255, 
         255, 255)]
